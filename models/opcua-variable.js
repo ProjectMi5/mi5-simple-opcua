@@ -1,12 +1,15 @@
 var Q = require('q');
 
 var instance;
+var dataType;
 
 function OpcuaVariable(client, nodeId){
+	console.log('creating variable')
     this.nodeId = nodeId;
     this.client = client;
 		client.readDatatype(nodeId, function(err, value){
-			this.dataType = value;
+			dataType = value;
+			console.log(value);
 		});
     instance = this;
 
@@ -29,7 +32,7 @@ OpcuaVariable.prototype.readQ = function(){
 };
 
 OpcuaVariable.prototype.write = function(value){
-    instance.client.writeNodeValue(this.nodeId, value, this.dataType, function(err){
+    instance.client.writeNodeValue(this.nodeId, value, dataType, function(err){
 		if(err)
 			console.error(err);
 	});
