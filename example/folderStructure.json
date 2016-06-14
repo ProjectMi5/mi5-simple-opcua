@@ -1,0 +1,587 @@
+{
+  "Input": {
+	"type": "Folder",
+	"content": {
+	  "ConnectionTestInput": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": false
+	  },
+	  "EmergencyStop": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": false
+	  },
+	  "Mode": {
+		"type": "Variable",
+		"dataType": "Int16",
+		"initValue": 1
+	  },
+	  "PositionInput": {
+		"type": "Variable",
+		"dataType": "Double",
+		"initValue": 3000
+	  },
+	  "SkillInput": {
+		"type": "Folder",
+		"content": {
+		  "SkillInput#index1": {
+			"type": "Folder",
+			"content": {
+			  "Execute": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": "false"
+			  },
+			  "ParameterInput": {
+				"type": "Folder",
+				"content": {
+				  "ParameterInput": {
+					"numberOfRepetitions": 6,
+					"repeat": true,
+					"type": "Folder",
+					"content": {
+					  "StringValue": {
+						"type": "Variable",
+						"dataType": "String",
+						"initValue": ""
+					  },
+					  "Value": {
+						"type": "Variable",
+						"dataType": "Double",
+						"initValue": "0"
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"repeat": true,
+			"numberOfRepetitions": 16,
+			"indexKey": "#index1"
+		  }
+		}
+	  },
+	  "Watchbit": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": false
+	  }
+	}
+  },
+  "Output": {
+	"type": "Folder",
+	"content": {
+	  "Connected": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": false
+	  },
+	  "ConnectionTestOutput": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": false
+	  },
+	  "CurrentTaskDescription": {
+		"type": "Variable",
+		"dataType": "String",
+		"initValue": "dummy task description"
+	  },
+	  "Dummy": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": false
+	  },
+	  "Error": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": "false"
+	  },
+	  "ErrorDescription": {
+		"type": "Variable",
+		"dataType": "String",
+		"initValue": ""
+	  },
+	  "ErrorId": {
+		"type": "Variable",
+		"dataType": "UInt16",
+		"initValue": "0"
+	  },
+	  "ID": {
+		"type": "Variable",
+		"dataType": "UInt16",
+		"initValue": "0"
+	  },
+	  "IP": {
+		"type": "Variable",
+		"dataType": "String",
+		"initValue": ""
+	  },
+	  "Idle": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": "false"
+	  },
+	  "Name": {
+		"type": "Variable",
+		"dataType": "String",
+		"initValue": "Cookie Module (Mock)"
+	  },
+	  "PositionOutput": {
+		"type": "Variable",
+		"dataType": "Double",
+		"initValue": "3750"
+	  },
+	  "PositionSensor": {
+		"type": "Variable",
+		"dataType": "Boolean",
+		"initValue": "false"
+	  },
+	  "SkillOutput": {
+		"type": "Folder",
+		"content": {
+		  "SkillOutput#index2": {
+			"type": "Folder",
+			"content": {
+			  "Activated": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": "true"
+			  },
+			  "Busy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": "false"
+			  },
+			  "Done": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": "false"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": "true"
+			  },
+			  "Error": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": "false"
+			  },
+			  "ID": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": ""
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": ""
+			  },
+			  "ParameterOutput": {
+				"type": "Folder",
+				"content": {
+				  "ParameterOutput": {
+					"numberOfRepetitions": 6,
+					"repeat": true,
+					"type": "Folder",
+					"content": {
+					  "Default": {
+						"type": "Variable",
+						"dataType": "Double",
+						"initValue": "0"
+					  },
+					  "Dummy": {
+						"type": "Variable",
+						"dataType": "Boolean",
+						"initValue": "true"
+					  },
+					  "ID": {
+						"type": "Variable",
+						"dataType": "UInt16",
+						"initValue": "0"
+					  },
+					  "MaxValue": {
+						"type": "Variable",
+						"dataType": "Double",
+						"initValue": "0"
+					  },
+					  "MinValue": {
+						"type": "Variable",
+						"dataType": "Double",
+						"initValue": "0"
+					  },
+					  "Name": {
+						"type": "Variable",
+						"dataType": "String",
+						"initValue": ""
+					  },
+					  "Required": {
+						"type": "Variable",
+						"dataType": "Boolean",
+						"initValue": "false"
+					  },
+					  "Unit": {
+						"type": "Variable",
+						"dataType": "String",
+						"initValue": ""
+					  }
+					}
+				  }
+				}
+			  },
+			  "Ready": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": "true"
+			  }
+			},
+			"repeat": true,
+			"numberOfRepetitions": 16,
+			"indexKey": "#index2"
+		  }
+		}
+	  },
+	  "StateValue": {
+		"type": "Folder",
+		"content": {
+		  "StateValue0": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue1": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue2": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue3": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue4": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue5": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue6": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue7": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue8": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue9": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  },
+		  "StateValue10": {
+			"type": "Folder",
+			"content": {
+			  "Description": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream in Module"
+			  },
+			  "Dummy": {
+				"type": "Variable",
+				"dataType": "Boolean",
+				"initValue": false
+			  },
+			  "Name": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "Remaining Cream"
+			  },
+			  "Unit": {
+				"type": "Variable",
+				"dataType": "String",
+				"initValue": "ml"
+			  },
+			  "Value": {
+				"type": "Variable",
+				"dataType": "Double",
+				"initValue": 123
+			  }
+			}
+		  }
+		}
+	  }
+	}
+  },
+  "reset": {
+	"type": "Variable",
+	"dataType": "Boolean",
+	"initValue": false
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "mi5-simple-opcua",
+  "version": "0.0.1",
+  "description": "This app helps working with node-opcua. Especially, it simplifies the creation of OPC UA servers and the work with OPC UA variables client-side.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dominik serve",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.0.0-rc.6",
+    "node-opcua": "0.0.54",
+    "q": "^1.4.1",
+    "should": "^8.3.1"
+  }
+}
