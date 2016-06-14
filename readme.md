@@ -1,6 +1,6 @@
 # Mi5 Node OPC UA Simple
 
-This app helps working with the module [node-opcua](http://node-opcua.github.io/). Examples are located in the `/examples` folder. More informations coming soon.
+This app helps working with the module [node-opcua](http://node-opcua.github.io/). Examples are located in the `/example` folder. More information coming soon.
 
 ## Getting Started
 
@@ -22,7 +22,7 @@ Variables must have a `dataType` and an `initValue`; supported data types are Bo
 
 ### Example
 
-```    {
+   {
         "type": "Folder",
         
         "browseName": "Output",
@@ -43,4 +43,4 @@ Variables must have a `dataType` and an `initValue`; supported data types are Bo
 	
 			]
 	
-	}```
+	}
