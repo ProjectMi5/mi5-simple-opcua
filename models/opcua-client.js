@@ -10,20 +10,26 @@ var opcua = require("node-opcua");
 var async = require("async");
 var Q = require("q");
 var should = require("should");
-var client, the_session, the_subscription;
+var events = require("events");
+var client, the_session, the_subscription, eventEmitter;
 
 function OpcuaClient(endpointUrl, callback){
+	eventEmitter = new events.EventEmitter();
 	client = new opcua.OPCUAClient();
+
 	
 	connect(client, endpointUrl)
 		.then(createSession)
 		.then(subscribe)
 		.then(function(){
+			eventEmitter.emit('connect');
 			callback();
 		})
 		.catch(function(err){
 			console.error(err);
+			eventEmitter.emit('error', err);
 			callback(err);
+
 		});
 }
 
@@ -118,6 +124,14 @@ OpcuaClient.prototype.onChange = function(nodeId, callback){
 	  //console.log(new Date().toString(), nodeId, value);
 	  callback(value);	  
     });},10000);
+};
+
+OpcuaClient.prototype.on = function(topic, callback){
+	eventEmitter.on(topic, callback);
+};
+
+OpcuaClient.prototype.once = function(topic, callback){
+	eventEmitter.once(topic, callback);
 };
     
 OpcuaClient.prototype.writeNodeValue = function(nodeId, value, dataType, callback) {
