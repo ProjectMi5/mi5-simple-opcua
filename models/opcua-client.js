@@ -95,7 +95,7 @@ function subscribe(){
 OpcuaClient.prototype.readVariable = function(nodeId, callback){
 	//console.log('nodeId: '+nodeId);
 	the_session.readVariableValue(nodeId, function(err,dataValue) {
-		//dataValue.statusCode.should.eql(opcua.StatusCodes.Good);
+		dataValue.statusCode.should.eql(opcua.StatusCodes.Good);
 		if(!err) callback(err, dataValue.value.value);
 		else callback(err);
 	});	
@@ -104,7 +104,7 @@ OpcuaClient.prototype.readVariable = function(nodeId, callback){
 OpcuaClient.prototype.readDatatype = function(nodeId, callback){
 	the_session.readVariableValue(nodeId, function(err,dataValue) {
 		if(!err) {
-			console.log(dataValue.statusCode);
+			dataValue.statusCode.should.eql(opcua.StatusCodes.Good);
 			callback(err, dataValue.value.dataType.key);
 		} else {callback(err);}
 	});
