@@ -1,27 +1,44 @@
 var Q = require('q');
 
-var instance;
+var self;
 var dataType;
+var self;
+
+var EventEmitter = require('events').EventEmitter;
+var util = require('util');
+util.inherits(OpcuaVariable, EventEmitter);
 
 function OpcuaVariable(client, nodeId){
-	console.log('creating variable')
     this.nodeId = nodeId;
     this.client = client;
-		client.readDatatype(nodeId, function(err, value){
+	client.readDatatype(nodeId, function(err, value){
+		if(!err)
 			dataType = value;
-			console.log(value);
-		});
-    instance = this;
-
+		else{
+			console.error('Could not read datatype of nodeId '+nodeId);
+			console.error(err);
+		}
+	});
+    self = this;
+	client.read(function(err, value){
+		if(err)
+			return console.error(error);
+		this.value = value;
+	});
+	client.onChange(nodeId, function(value){
+		this.value = value;
+		self.emit('change', value);
+	});
+	
 }
 
 OpcuaVariable.prototype.read = function(callback){
-	instance.client.readVariable(this.nodeId, callback);
+	self.client.readVariable(this.nodeId, callback);
 };
 
 OpcuaVariable.prototype.readQ = function(){
 	var deferred = Q.defer();
-	instance.client.readVariable(this.nodeId, function(err, value){
+	self.client.readVariable(this.nodeId, function(err, value){
 		if(!err){
 			deferred.resolve(value);
 		} else {
@@ -31,16 +48,23 @@ OpcuaVariable.prototype.readQ = function(){
 	return deferred.promise;
 };
 
-OpcuaVariable.prototype.write = function(value){
-    instance.client.writeNodeValue(this.nodeId, value, dataType, function(err){
+OpcuaVariable.prototype.write = function(value, callback){
+    self.client.writeNodeValue(this.nodeId, value, dataType, callback);
+};
+
+OpcuaVariable.prototype.simpleWrite = function(value){
+    self.client.writeNodeValue(this.nodeId, value, dataType, function(err){
 		if(err)
 			console.error(err);
 	});
 };
 
 OpcuaVariable.prototype.onChange = function(callback){
-  var self = instance;
-  self.client.onChange(this.nodeId, callback);
+  self.on('change', callback);
+};
+
+OpcuaVariable.prototype.oneChange = function(callback){
+  self.once('change', callback);
 };
 
 module.exports = OpcuaVariable;
