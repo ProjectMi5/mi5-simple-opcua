@@ -1,6 +1,5 @@
 var Q = require('q');
 
-var dataType;
 
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
@@ -11,9 +10,14 @@ function OpcuaVariable(client, nodeId){
 	EventEmitter.call(this);
 	this.nodeId = nodeId;
 	this.client = client;
+	this.dataType;
+	this.init = false;
 	client.readDatatype(nodeId, function(err, value){
-		if(!err)
-			dataType = value;
+		if(!err){
+			self.dataType = value;
+			self.init = true;
+			self.emit('init');
+		}
 		else{
 			console.error('Could not read datatype of nodeId '+nodeId);
 			console.error(err);
@@ -50,12 +54,19 @@ OpcuaVariable.prototype.readQ = function(){
 
 OpcuaVariable.prototype.writeCB = function(value, callback){
 	var self = this;
-	this.client.writeNodeValue(self.nodeId, value, dataType, callback);
+	if(this.init){
+		self.client.writeNodeValue(self.nodeId, value, self.dataType, callback);
+	} else {
+		self.once('init', function(){
+			self.client.writeNodeValue(self.nodeId, value, self.dataType, callback);
+		});
+	}
+	
 };
 
 OpcuaVariable.prototype.write = function(value){
 	var self = this;
-	this.client.writeNodeValue(self.nodeId, value, dataType, function(err){
+	this.writeCB(value, function(err){
 		if(err)
 			console.error(err);
 	});
