@@ -48,11 +48,11 @@ OpcuaVariable.prototype.readQ = function(){
 	return deferred.promise;
 };
 
-OpcuaVariable.prototype.write = function(value, callback){
+OpcuaVariable.prototype.writeCB = function(value, callback){
     self.client.writeNodeValue(this.nodeId, value, dataType, callback);
 };
 
-OpcuaVariable.prototype.simpleWrite = function(value){
+OpcuaVariable.prototype.write = function(value){
     self.client.writeNodeValue(this.nodeId, value, dataType, function(err){
 		if(err)
 			console.error(err);
