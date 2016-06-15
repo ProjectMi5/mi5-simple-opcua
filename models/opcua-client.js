@@ -12,12 +12,13 @@ var Q = require("q");
 var should = require("should");
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
-var self, client, the_session, the_subscription, eventEmitter;
+//var the_session, the_subscription, eventEmitter;
 
 util.inherits(OpcuaClient, EventEmitter);
 
 function OpcuaClient(endpointUrl, callback){
-	var self = this;
+	self = this;
+	EventEmitter.call(this);
 	client = new opcua.OPCUAClient();
 
 	
@@ -94,13 +95,18 @@ function subscribe(){
 OpcuaClient.prototype.readVariable = function(nodeId, callback){
 	//console.log('nodeId: '+nodeId);
 	the_session.readVariableValue(nodeId, function(err,dataValue) {
-	   callback(err, dataValue.value.value);
+		//dataValue.statusCode.should.eql(opcua.StatusCodes.Good);
+		if(!err) callback(err, dataValue.value.value);
+		else callback(err);
 	});	
 };
 
 OpcuaClient.prototype.readDatatype = function(nodeId, callback){
 	the_session.readVariableValue(nodeId, function(err,dataValue) {
-		callback(err, dataValue.value.dataType.key);
+		if(!err) {
+			console.log(dataValue.statusCode);
+			callback(err, dataValue.value.dataType.key);
+		} else {callback(err);}
 	});
 };
 
@@ -148,11 +154,11 @@ OpcuaClient.prototype.writeNodeValue = function(nodeId, value, dataType, callbac
 
     the_session.write(nodesToWrite, function (err, statusCodes) {
         if (!err) {
-			// console.log('statusCodes:'+statusCodes);
-            statusCodes.length.should.equal(nodesToWrite.length);
-            statusCodes.forEach(function(item){
-				item.should.eql(opcua.StatusCodes.Good);
-			});
+					// console.log('statusCodes:'+statusCodes);
+					statusCodes.length.should.equal(nodesToWrite.length);
+					statusCodes.forEach(function(item){
+						item.should.eql(opcua.StatusCodes.Good);
+					});
         }
 		callback(err);
     });
