@@ -14,5 +14,17 @@
     "q": "^1.4.1",
     "should": "^8.3.1",
     "util": "^0.10.3"
-  }
+  },
+  "directories": {
+    "example": "example"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ProjectMi5/mi5-simple-opcua.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ProjectMi5/mi5-simple-opcua/issues"
+  },
+  "homepage": "https://github.com/ProjectMi5/mi5-simple-opcua#readme"
 }
