@@ -25,7 +25,6 @@ function OpcuaVariable(client, nodeId){
 	});
 	client.onChange(nodeId, function(value){
 		self.value = value;
-		console.log(nodeId, 'emit change');
 		self.emit('change', value);
 	});
 	
