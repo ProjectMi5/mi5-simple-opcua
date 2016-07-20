@@ -5,13 +5,18 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 util.inherits(OpcuaVariable, EventEmitter);
 
-function OpcuaVariable(client, nodeId){
+function OpcuaVariable(client, nodeId, initValue){
 	var self = this;
 	EventEmitter.call(this);
 	this.nodeId = nodeId;
 	this.client = client;
 	this.dataType;
 	this.init = false;
+	
+	if(initValue){
+		this.initValue = initValue;
+	}
+	
 	client.readDatatype(nodeId, function(err, value){
 		if(!err){
 			self.dataType = value;
@@ -27,6 +32,12 @@ function OpcuaVariable(client, nodeId){
 	this.read(function(value){
 		this.value = value;
 	});
+	
+	if(this.initValue){
+		this.write(initValue);
+		self.value = initValue;
+	}
+	
 	client.onChange(nodeId, function(value){
 		self.value = value;
 		self.emit('change', value);
