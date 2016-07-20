@@ -8,7 +8,7 @@ var client;
 var OpcuaClient = require('./../index').OpcuaClient;
 var OpcuaVariable = require('./../index').OpcuaVariable; 
 
-var config = require('./config')
+var config = require('./config');
 
 var endpointUrl = "opc.tcp://" + require("os").hostname() + ":" + config.ServerStructure.serverInfo.port;
 var baseNodeIdInput = config.ServerStructure.baseNodeId + '.' + config.ServerStructure.moduleName + '.Input.SkillInput.SkillInput0.';

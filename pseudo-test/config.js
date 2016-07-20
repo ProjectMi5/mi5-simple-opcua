@@ -4,7 +4,7 @@ var ModuleID = '2101';
 
 var folderStructure = require('./folderStructure.json');
 
-var helper = require('./../helper/folderStructureHandler');
+var helper = require('./../helper/folderStructureHelper');
 var expandFolderStructure = helper.expandFolderStructure;
 var setInitValues = helper.setInitValues;
 
