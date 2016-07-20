@@ -29,7 +29,9 @@ function OpcuaVariable(client, nodeId, initValue){
 		}
 	});
 
-	this.read(function(value){
+	this.read(function(err, value){
+	  if(err)
+	    return console.error(err);
 		this.value = value;
 	});
 	
