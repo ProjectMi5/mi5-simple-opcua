@@ -12,6 +12,8 @@ var Q = require("q");
 var should = require("should");
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
+var debug = require('debug')('mi5-simple-opcua:client');
+//debug.log = console.log.bind(console); // --> debug goes to stdout
 //var the_session, the_subscription, eventEmitter;
 
 util.inherits(OpcuaClient, EventEmitter);
@@ -44,7 +46,7 @@ function connect(client, endpointUrl){
 		if(err) {
 			deferred.reject(err);
 		} else {
-			console.log("connected to opcua server at " + endpointUrl);
+			debug("connected to opcua server at " + endpointUrl);
 			deferred.resolve();
 		}
 	});
@@ -81,19 +83,19 @@ function subscribe(){
     });
    
     the_subscription.on("started",function(){
-	   console.log("subscription started - subscriptionId = ",the_subscription.subscriptionId);
+	   debug("subscription started - subscriptionId = ",the_subscription.subscriptionId);
 	   deferred.resolve();
     }).on("keepalive",function(){
-	   //console.log("keepalive");
+	   //debug("keepalive");
     }).on("terminated",function(){
-	   console.log("terminated");
+	   debug("terminated");
     });
 	
 	return deferred.promise;
 }
 
 OpcuaClient.prototype.readVariable = function(nodeId, callback){
-	//console.log('nodeId: '+nodeId);
+	//debug('nodeId: '+nodeId);
 	the_session.readVariableValue(nodeId, function(err,dataValue) {
 		dataValue.statusCode.should.eql(opcua.StatusCodes.Good);
 		if(!err) callback(err, dataValue.value.value);
@@ -130,7 +132,7 @@ OpcuaClient.prototype.onChange = function(nodeId, callback){
 	var monitoredItem = this.monitorItem(nodeId);
   setTimeout(function(){monitoredItem.on("changed",function(dataValue){
    	  var value = dataValue.value.value;
-	  //console.log(new Date().toString(), nodeId, value);
+	  //debug(new Date().toString(), nodeId, value);
 	  callback(value);	  
     });},10000);
 };
@@ -154,7 +156,7 @@ OpcuaClient.prototype.writeNodeValue = function(nodeId, value, dataType, callbac
 
     the_session.write(nodesToWrite, function (err, statusCodes) {
         if (!err) {
-					// console.log('statusCodes:'+statusCodes);
+					// debug('statusCodes:'+statusCodes);
 					statusCodes.length.should.equal(nodesToWrite.length);
 					statusCodes.forEach(function(item){
 						item.should.eql(opcua.StatusCodes.Good);

@@ -7,11 +7,12 @@
 
 /*global require,setInterval,console */
 var opcua = require("node-opcua");
+var debug = require("debug")('mi5-simple-opcua:server');
 var server, structure;
 
 
 exports.newOpcuaServer = function(ServerStructure){
-	console.log('Comment by Dominik: The error called "Ignoring reversed keyword nodeClass" may be ignored. It is issued on github, already.')
+	debug('Comment by Dominik: The error called "Ignoring reversed keyword nodeClass" may be ignored. It is issued on github, already.');
 	structure = ServerStructure;
 	// Let's create an instance of OPCUAServer
 	server = new opcua.OPCUAServer(structure.serverInfo);
@@ -20,7 +21,7 @@ exports.newOpcuaServer = function(ServerStructure){
 };
 
 function post_initialize() {
-    console.log("initialized");
+  debug("initialized");
 	server.variables = {};
 	
     function construct_my_address_space(server) {
@@ -32,10 +33,10 @@ function post_initialize() {
 
     construct_my_address_space(server);
     server.start(function() {
-        console.log("Server is now listening ... ( press CTRL+C to stop)");
-        console.log("port ", server.endpoints[0].port);
+        debug("Server is now listening ... ( press CTRL+C to stop)\n" +
+            "port "+ server.endpoints[0].port);
         var endpointUrl = server.endpoints[0].endpointDescriptions()[0].endpointUrl;
-        console.log(" the primary server endpoint url is ", endpointUrl );
+        debug(" the primary server endpoint url is ", endpointUrl );
     });
 }
 
