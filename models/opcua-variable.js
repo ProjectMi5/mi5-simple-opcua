@@ -32,7 +32,7 @@ function OpcuaVariable(client, nodeId, initValue){
 	this.read(function(err, value){
 	  if(err)
 	    return console.error(err);
-		this.value = value;
+		self.value = value;
 	});
 	
 	if(this.initValue){
