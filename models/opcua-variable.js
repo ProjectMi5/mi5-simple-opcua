@@ -5,22 +5,28 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 util.inherits(OpcuaVariable, EventEmitter);
 
-function OpcuaVariable(client, nodeId, initValue){
+var debug = require('debug');
+
+function OpcuaVariable(client, nodeId, subscribe, writeInitValue){
 	var self = this;
 	EventEmitter.call(this);
+  this.debug = debug('mi5-simple-opcua:variable:'+nodeId);
+
 	this.nodeId = nodeId;
 	this.client = client;
-	this.dataType;
-	this.init = false;
-	
-	if(initValue){
-		this.initValue = initValue;
-	}
+  this.initialized = false;
+
+  if(subscribe != null && subscribe === false){
+    this.subscribedFromBeginning = false;
+  } else {
+    this.subscribedFromBeginning = true;
+    self.subscribe();
+  }
 	
 	client.readDatatype(nodeId, function(err, value){
 		if(!err){
 			self.dataType = value;
-			self.init = true;
+			self.initialized = true;
 			self.emit('init');
 		}
 		else{
@@ -35,17 +41,42 @@ function OpcuaVariable(client, nodeId, initValue){
 		self.value = value;
 	});
 	
-	if(this.initValue){
-		this.write(initValue);
-		self.value = initValue;
+	if(writeInitValue != null){
+	  this.initValue = writeInitValue;
+		this.write(self.initValue);
+		self.value = self.initValue;
 	}
-	
-	client.onChange(nodeId, function(value){
-		self.value = value;
-		self.emit('change', value);
-	});
-	
+
+  self.on('change', function(value){
+    self.value = value;
+  });
 }
+
+OpcuaVariable.prototype.subscribe = function(){
+  var self = this;
+  if(this.monitoredItem)
+    return self.debug('is already being monitored.');
+  this.monitoredItem = this.client.monitorItem(self.nodeId);
+  setTimeout(function(){
+    self.emit('subscribed');
+    self.monitoredItem.on("changed",function(dataValue){
+      var value = dataValue.value.value;
+      //debug(new Date().toString(), nodeId, value);
+      self.emit("change", value);
+    });
+  },5000);
+};
+
+OpcuaVariable.prototype.unsubscribe = function(){
+  if(this.monitoredItem){
+    this.monitoredItem.terminate();
+    delete this.monitoredItem;
+    delete this.value;
+  } else {
+    this.debug('is already unsubscribed.');
+  }
+
+};
 
 OpcuaVariable.prototype.read = function(callback){
 	var self = this;
@@ -67,7 +98,7 @@ OpcuaVariable.prototype.readQ = function(){
 
 OpcuaVariable.prototype.writeCB = function(value, callback){
 	var self = this;
-	if(this.init){
+	if(this.initialized){
 		self.client.writeNodeValue(self.nodeId, value, self.dataType, callback);
 	} else {
 		self.once('init', function(){
@@ -86,11 +117,22 @@ OpcuaVariable.prototype.write = function(value){
 };
 
 OpcuaVariable.prototype.onChange = function(callback){
+  if(!this.monitoredItem)
+    this.subscribe();
   this.on('change', callback);
 };
 
 OpcuaVariable.prototype.oneChange = function(callback){
-  this.once('change', callback);
+  var self = this;
+
+  if(!this.monitoredItem)
+    this.subscribe();
+  this.once('change', function(value){
+    if(self.subscribedFromBeginning === false)
+      this.unsubscribe();
+
+    callback(value);
+  });
 };
 
 module.exports = OpcuaVariable;
