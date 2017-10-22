@@ -19,12 +19,12 @@ var debug = require('debug')('mi5-simple-opcua:client');
 util.inherits(OpcuaClient, EventEmitter);
 
 function OpcuaClient(endpointUrl, callback){
-	self = this;
+	var self = this;
 	EventEmitter.call(this);
 	this.client = new opcua.OPCUAClient();
 
 	
-	connect(self.client, endpointUrl)
+	connect(this, endpointUrl)
 		.then(createSession)
 		.then(subscribe)
 		.then(function(){
@@ -39,15 +39,15 @@ function OpcuaClient(endpointUrl, callback){
 		});
 }
 
-function connect(client, endpointUrl){
+function connect(self, endpointUrl){
 	var deferred = Q.defer();
 
-	client.connect(endpointUrl,function (err) {
+	self.client.connect(endpointUrl,function (err) {
 		if(err) {
 			deferred.reject(err);
 		} else {
 			debug("connected to opcua server at " + endpointUrl);
-			deferred.resolve();
+			deferred.resolve(self);
 		}
 	});
 	
@@ -55,14 +55,13 @@ function connect(client, endpointUrl){
 	
 }
 
-function createSession(){
+function createSession(self){
 	var deferred = Q.defer();
-	var self = this;
 	
 	self.client.createSession(function(err,session) {
 		if(!err) {
 			self.the_session = session;
-			deferred.resolve();
+			deferred.resolve(self);
 		} else {
 			deferred.reject(err);
 		}
@@ -71,9 +70,8 @@ function createSession(){
 	return deferred.promise;
 }
 
-function subscribe(){
+function subscribe(self){
 	var deferred = Q.defer();
-	var self = this;
 	
 	self.the_subscription = new opcua.ClientSubscription(self.the_session,{
 	   requestedPublishingInterval: 1000,
@@ -85,7 +83,7 @@ function subscribe(){
     });
    
     self.the_subscription.on("started",function(){
-	   debug("subscription started - subscriptionId = ",the_subscription.subscriptionId);
+	   debug("subscription started - subscriptionId = ",self.the_subscription.subscriptionId);
 	   deferred.resolve();
     }).on("keepalive",function(){
 	   //debug("keepalive");
