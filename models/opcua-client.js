@@ -21,10 +21,10 @@ util.inherits(OpcuaClient, EventEmitter);
 function OpcuaClient(endpointUrl, callback){
 	self = this;
 	EventEmitter.call(this);
-	client = new opcua.OPCUAClient();
+	this.client = new opcua.OPCUAClient();
 
 	
-	connect(client, endpointUrl)
+	connect(self.client, endpointUrl)
 		.then(createSession)
 		.then(subscribe)
 		.then(function(){
@@ -57,10 +57,11 @@ function connect(client, endpointUrl){
 
 function createSession(){
 	var deferred = Q.defer();
+	var self = this;
 	
-	client.createSession(function(err,session) {
+	self.client.createSession(function(err,session) {
 		if(!err) {
-			the_session = session;
+			self.the_session = session;
 			deferred.resolve();
 		} else {
 			deferred.reject(err);
@@ -72,8 +73,9 @@ function createSession(){
 
 function subscribe(){
 	var deferred = Q.defer();
+	var self = this;
 	
-	the_subscription = new opcua.ClientSubscription(the_session,{
+	self.the_subscription = new opcua.ClientSubscription(self.the_session,{
 	   requestedPublishingInterval: 1000,
 	   requestedLifetimeCount: 10,
 	   requestedMaxKeepAliveCount: 2,
@@ -82,7 +84,7 @@ function subscribe(){
 	   priority: 10
     });
    
-    the_subscription.on("started",function(){
+    self.the_subscription.on("started",function(){
 	   debug("subscription started - subscriptionId = ",the_subscription.subscriptionId);
 	   deferred.resolve();
     }).on("keepalive",function(){
@@ -96,7 +98,7 @@ function subscribe(){
 
 OpcuaClient.prototype.readVariable = function(nodeId, callback){
 	//debug('nodeId: '+nodeId);
-	the_session.readVariableValue(nodeId, function(err,dataValue) {
+	this.the_session.readVariableValue(nodeId, function(err,dataValue) {
 		dataValue.statusCode.should.eql(opcua.StatusCodes.Good);
 		if(!err) callback(err, dataValue.value.value);
 		else callback(err);
@@ -104,7 +106,7 @@ OpcuaClient.prototype.readVariable = function(nodeId, callback){
 };
 
 OpcuaClient.prototype.readDatatype = function(nodeId, callback){
-	the_session.readVariableValue(nodeId, function(err,dataValue) {
+	this.the_session.readVariableValue(nodeId, function(err,dataValue) {
 		if(!err) {
 			dataValue.statusCode.should.eql(opcua.StatusCodes.Good);
 			callback(err, dataValue.value.dataType.key);
@@ -113,7 +115,7 @@ OpcuaClient.prototype.readDatatype = function(nodeId, callback){
 };
 
 OpcuaClient.prototype.monitorItem = function(nodeId){
-    var monitoredItem  = the_subscription.monitor({
+    var monitoredItem  = this.the_subscription.monitor({
  	   nodeId: opcua.resolveNodeId(nodeId),
  	   attributeId: opcua.AttributeIds.Value
     },
@@ -154,7 +156,7 @@ OpcuaClient.prototype.writeNodeValue = function(nodeId, value, dataType, callbac
         }
     ];
 
-    the_session.write(nodesToWrite, function (err, statusCodes) {
+    this.the_session.write(nodesToWrite, function (err, statusCodes) {
         if (!err) {
 					// debug('statusCodes:'+statusCodes);
 					statusCodes.length.should.equal(nodesToWrite.length);
