@@ -23,17 +23,6 @@ let yourServer = new simpleOpcuaServer(port, ServerStructure, options).start();
 
 The `ServerStructure` can look like this:
 
-/**
-	 *
-   * @param {Number} [port] The TCP port to listen to. Default is 4840.
-   * @param [ServerStructure]
-   * @param [ServerStructure.rootFolder = RootFolder]
-	 * @param [ServerStructure.resourcePath = ""] this path will be added to the endpoint resource name
-	 * @param [ServerStructure.baseNodeId = "ns=4;s="]
-	 * @param [ServerStructure.content = {}]
-   * @param [options = {}] for more information see here: http://node-opcua.github.io/api_doc/classes/OPCUAServer.html
-   */
-
 ```javascript
 {
     resourcePath = "", //this path will be added to the endpoint resource name
