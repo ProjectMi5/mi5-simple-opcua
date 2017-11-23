@@ -44,6 +44,7 @@ class OpcuaClient extends EventEmitter {
     await this.client.connectPromise(self.endpointUrl);
     debug("connected to opcua server at " + self.endpointUrl);
     //create session
+    this.connected = true;
     this.session = await self.client.createSessionPromise();
     //subscribe
     if (this.sub)

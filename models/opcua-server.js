@@ -177,6 +177,13 @@ class OpcuaServer extends EventEmitter{
     return newElement;
   }
 
+  /**
+   *
+   * @param baseNodeId
+   * @param par nodeId of the parent Folder
+   * @param elems
+   * @returns {*}
+   */
   addStructure(baseNodeId, par, elems){
     addContentFromStructure(this, baseNodeId, par, elems);
     return elems;

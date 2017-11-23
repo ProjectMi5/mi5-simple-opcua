@@ -2,7 +2,7 @@ const EventEmitter = require('events').EventEmitter;
 const debug = require('debug');
 
 class OpcuaVariable extends EventEmitter {
-  constructor(client, nodeId, subscribe = false, writeInitValue){
+  constructor(client, nodeId, subscribe = false, writeInitValue = null){
     super();
     let self = this;
     this.debug = debug('mi5-simple-opcua:variable:'+nodeId);
@@ -10,15 +10,36 @@ class OpcuaVariable extends EventEmitter {
     this.nodeId = nodeId;
     this.client = client;
     this.initialized = false;
+    if((this.writeInitValue === null)||(this.writeInitValue === undefined));
+      this.writeInitValue = null;
 
     if(!subscribe)
       this.subscribedFromBeginning = false;
     else{
       this.subscribedFromBeginning = true;
-      self.subscribe();
     }
 
-    client.readDatatype(nodeId)
+    if(client.connected)
+      self.init();
+    else {
+      client.once('connect', function(){
+        self.init();
+      })
+    }
+
+
+
+    self.on('change', function(value){
+      self.value = value;
+    });
+
+  }
+
+  init(){
+    let self = this;
+    if(self.subscribedFromBeginning)
+      self.subscribe();
+    self.client.readDatatype(self.nodeId)
       .then(function(value){
         self.dataType = value;
         self.initialized = true;
@@ -35,16 +56,11 @@ class OpcuaVariable extends EventEmitter {
       })
       .catch(console.error);
 
-    if(writeInitValue !== null){
-      this.initValue = writeInitValue;
+    if(self.writeInitValue !== null){
+      this.initValue = self.writeInitValue;
       this.write(self.initValue);
       self.value = self.initValue;
     }
-
-    self.on('change', function(value){
-      self.value = value;
-    });
-
   }
 
   subscribe(){
