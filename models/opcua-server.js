@@ -179,6 +179,7 @@ class OpcuaServer extends EventEmitter{
 
   addStructure(baseNodeId, par, elems){
     addContentFromStructure(this, baseNodeId, par, elems);
+    return elems;
   }
 
   getVariable(nodeId){
