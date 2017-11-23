@@ -1,6 +1,6 @@
 {
   "name": "mi5-simple-opcua",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "This app helps working with node-opcua. Especially, it simplifies the creation of OPC UA servers and the work with OPC UA variables client-side.",
   "main": "index.js",
   "scripts": {
@@ -9,15 +9,17 @@
   "author": "dominik serve",
   "license": "MIT",
   "dependencies": {
-    "async": "^2.0.0-rc.6",
-    "debug": "^2.2.0",
+    "async": "^2.6.0",
+    "bluebird": "^3.5.1",
+    "debug": "^3.1.0",
+    "mocha": "^4.0.1",
     "node-opcua": "0.0.65",
-    "q": "^1.4.1",
-    "should": "^10.0.0",
+    "q": "^2.0.3",
+    "should": "^13.1.3",
     "util": "^0.10.3"
   },
   "directories": {
-    "example": "example"
+    "test": "test"
   },
   "devDependencies": {},
   "repository": {
@@ -27,5 +29,10 @@
   "bugs": {
     "url": "https://github.com/ProjectMi5/mi5-simple-opcua/issues"
   },
-  "homepage": "https://github.com/ProjectMi5/mi5-simple-opcua#readme"
+  "homepage": "https://github.com/ProjectMi5/mi5-simple-opcua#readme",
+  "keywords": [
+    "opcua",
+    "node",
+    "iot"
+  ]
 }

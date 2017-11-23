@@ -6,7 +6,8 @@ This app helps working with the module [node-opcua](http://node-opcua.github.io/
 
 * Install [node.js](https://nodejs.org/en/)
 * Create a new folder for your project.
-* In this folder run `npm init` and fill in the requested information or let it empty.
+* Navigate to this folder in the command prompt.
+* Run `npm init` and fill in the requested information or let it empty.
 * Then run `npm install https://github.com/ProjectMi5/mi5-simple-opcua --save`.
 * Create a file `app.js` and require the module:
 `require('mi5-simple-opcua');`
@@ -16,72 +17,85 @@ This app helps working with the module [node-opcua](http://node-opcua.github.io/
 This module allows you to create a simple OPC UA server with your own folder structure and variables.
 
 ```javascript
-var server = require('mi5-simple-opcua').OpcuaServer;
-var yourServer = server.newOpcuaServer(ServerStructure);
+const simpleOpcuaServer = require('mi5-simple-opcua').OpcuaServer;
+let yourServer = new simpleOpcuaServer(port, ServerStructure, options).start();
 ```
 
 The `ServerStructure` can look like this:
 
+/**
+	 *
+   * @param {Number} [port] The TCP port to listen to. Default is 4840.
+   * @param [ServerStructure]
+   * @param [ServerStructure.rootFolder = RootFolder]
+	 * @param [ServerStructure.resourcePath = ""] this path will be added to the endpoint resource name
+	 * @param [ServerStructure.baseNodeId = "ns=4;s="]
+	 * @param [ServerStructure.content = {}]
+   * @param [options = {}] for more information see here: http://node-opcua.github.io/api_doc/classes/OPCUAServer.html
+   */
+
 ```javascript
 {
-	moduleName: 'Module Bla Bla',
-	serverInfo: {
-		port: 4842, // the port of the listening socket of the server
-		resourcePath: "", // this path will be added to the endpoint resource name, default: empty
-		buildInfo : {
-			productName: 'Bla Bla', //any name
-			buildNumber: "7658", // any number
-			buildDate: new Date(2016,3,25) // any date
-		}
-	},
+    resourcePath = "", //this path will be added to the endpoint resource name
 	rootFolder: "RootFolder",
-	baseNodeId: "ns=4;s=MI5.", //this ist just an example
+	baseNodeId: "ns=4;s=", //this ist just an example
 	content: FolderStructure
-	} 
 };
 ```
 
 The `FolderStructure` is addressed in the following section.
 
+The `options` are optional. You can further customize your server with it. For more information have a look [here](http://node-opcua.github.io/api_doc/classes/OPCUAServer.html).
+
+
 ### The Folder Structure
 
-The folder structure is an array of elements. Each element has at least the attributes `type` and `browseName`.
+The folder structure is a collection of elements. Each element starts with its browseName and must at least have the attribute `type`. Possible types are `Folder`, `Object`, `Variable`, and `Method`. 
 
-Possible types are `Folder`, `Object` and `Variable`, so far. 
 
 #### Folders and Objects
 
-Folders and Objects may have subfolders, i.e. an array of objects with the attribute `content`.
+Folders and Objects may have subfolders, i.e. another folder structure with the attribute `content`.
 
 #### Variables
 
-Variables must have a `dataType` and an `initValue`; supported data types are Boolean, Double, String.
+Variables must have a `dataType` and an `initValue`; supported data types are `Boolean`, `Integer`, `Double` and `String`.
 
 #### Example
 
 ```json
-   {
+{
+  "Mi5": {
+    "type": "Folder",
+    "content": {
+      "Output": {
         "type": "Folder",
-        
-        "browseName": "Output",
-        
-        "content": [
-	
-			{
-	
-				"type": "Variable",
-	
-				"browseName": "Connected",
-	
-				"dataType": "Boolean",
-	
-				"initValue": true
-	
-			}
-	
-			]
-	
-	}
+        "content": {
+          "Connected": {
+            "type": "Variable",
+            "dataType": "Boolean",
+            "initValue": true
+          },
+          "Voltage": {
+            "type": "Variable",
+            "dataType": "Double",
+            "initValue": 2.345
+          }
+        }
+      },
+      "Input": {
+        "type": "Folder",
+        "content": {
+          "Methode": {
+            "type": "Method"
+          },
+          "Auto": {
+            "type": "Object"
+          }
+        }
+      }
+    }
+  }
 ```
 
 ## Your Client
@@ -89,9 +103,9 @@ Variables must have a `dataType` and an `initValue`; supported data types are Bo
 Your own client can be created as follows:
 
 ```javascript
-var client = require('mi5-simple-opcua').OpcuaClient;
-var endpointUrl = "opc.tcp://[put Server HostName here]:[put port here]"
-var yourClient = new client(endpointUrl, function(error){
+const client = require('mi5-simple-opcua').OpcuaClient;
+let endpointUrl = "opc.tcp://[put Server HostName here]:[put port here]"
+let yourClient = new client(endpointUrl, function(error){
   if(error)
     return console.log(error);
   console.log('connection established');
@@ -102,23 +116,40 @@ The `callback(error)` will be executed, once the connection is established or an
 
 ### OPC UA Variables
 
-With mi5-simple-opcua variables you can easily listen to or write OPC UA variables on a server.
+With mi5-simple-opcua variables you can easily listen to or write OPC UA variables on a server. Be aware that different variables are used for programming a server or a client.
+
+#### Server Variables
+
+You get them as follows:
+
+```javascript
+let yourVariable = server.getVariable(nodeId);
+```
+
+Each server variable comes with the following methods:
+
+* `variable.setValue(value)`
+* `variable.getValue()`
+* `variable.onChange(function(value){})`
+* `variable.oneChange(function(value){})`
+* `variable.monitor()`
+* `variable.unmonitor()`
+
+#### Client Variables
 
 They are created as follows:
 
 ```javascript
-var OpcuaVariable = require('mi5-simple-opcua').OpcuaVariable;
-var yourVariable = new OpcuaVariable(yourClient, nodeId, subscribe [,writeInitValue]);
+const OpcuaVariable = require('mi5-simple-opcua').OpcuaClientVariable;
+let yourVariable = new OpcuaVariable(yourClient, nodeId, subscribe [,writeInitValue]);
 ```
 
 The `nodeId` is a String. `subscribe` determines whether or not the variable will be monitored permanently or not. `writeInitValue` will be written to the server once the client is connected, but can also stay `null`.
 
-#### Methods
+Each client variable comes with the following methods:
 
-Each variable comes with the following methods:
-
-* `variable.write(value)`
-* `variable.read(function(value){})`
+* `async variable.write(value)`
+* `async variable.read()`
 * `variable.on('change', function(value){})`
 * `variable.once('change', function(value){})`
 * `variable.subscribe()`
