@@ -86,7 +86,7 @@ class OpcuaServer extends EventEmitter{
 	async waitForServerToRun(){
 	  let self = this;
 	  return new Promise(function(resolve, reject){
-	    if(this.running)
+	    if(self.running)
 	      return resolve();
 	    self.once('running', resolve);
     });
