@@ -228,8 +228,11 @@ function addElementFromStructure(self, baseNodeId, par, browseName, elem){
 	} else {
 		dot = '';
 	}
+  if((par !== 'RootFolder')&&(typeof par === 'string' || par instanceof String)){
+    par = self.AddressSpace.findNode(par);
+  }
 
-	if(elem.nodeId)
+  if(elem.nodeId)
 		elem.nodeId = baseNodeId + elem.nodeId;
 	else
     elem.nodeId = baseNodeId + dot + browseName;
@@ -237,6 +240,7 @@ function addElementFromStructure(self, baseNodeId, par, browseName, elem){
 	elem.browseName = browseName;
 
 	newElement = self.addElementToAddressSpace(par, elem);
+	elem.nodePoint = newElement;
 
 	if(typeof elem.content !== 'undefined'){
 		if(elem.type === 'RepeatUnit'){
