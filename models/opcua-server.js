@@ -25,54 +25,55 @@ const defaultOptions = {
 
 class OpcuaServer extends EventEmitter{
   /**
-	 *
+   *
    * @param {Number} [port] The TCP port to listen to. Default is 4840.
    * @param [ServerStructure]
    * @param [ServerStructure.rootFolder = RootFolder]
-	 * @param [ServerStructure.resourcePath = ""] this path will be added to the endpoint resource name
-	 * @param [ServerStructure.baseNodeId = "ns=4;s="]
-	 * @param [ServerStructure.content = {}]
+   * @param [ServerStructure.resourcePath = ""] this path will be added to the endpoint resource name
+   * @param [ServerStructure.baseNodeId = "ns=4;s="]
+   * @param [ServerStructure.content = {}]
    * @param [options = {}] for more information see here: http://node-opcua.github.io/api_doc/classes/OPCUAServer.html
    */
-	constructor(port = 4840, ServerStructure = {}, options = defaultOptions){
-		super(); // invoke constructor of EventEmitter
-		let self = this;
+  constructor(port = 4840, ServerStructure = {}, options = defaultOptions){
+    super(); // invoke constructor of EventEmitter
+    let self = this;
 
-		// set defaults on deeper object levels
-		ServerStructure.resourcePath = ServerStructure.resourcePath || "";
-		ServerStructure.rootFolder = ServerStructure.rootFolder || "RootFolder";
-		ServerStructure.baseNodeId = ServerStructure.baseNodeId || "ns=4;s=";
-		ServerStructure.content = ServerStructure.content || {};
+    // set defaults on deeper object levels
+    ServerStructure.resourcePath = ServerStructure.resourcePath || "";
+    ServerStructure.rootFolder = ServerStructure.rootFolder || "RootFolder";
+    ServerStructure.baseNodeId = ServerStructure.baseNodeId || "ns=4;s=";
+    ServerStructure.content = ServerStructure.content || {};
 
-		options.port = port;
+    options.port = port;
 
     this.initialized = false;
     this.running = false;
-		this.structure = ServerStructure;
+    this.structure = ServerStructure;
     this.variables = {};
     this.server = new opcua.OPCUAServer(options);
+    this.ownAddressSpace = {};
 
     this.server.initialize(function(error){
-    	if(error)
-    		return debug(error);
+      if(error)
+        return debug(error);
       self.addressSpace = self.server.engine.addressSpace;
       addContentFromStructure(self, self.structure.baseNodeId, self.structure.rootFolder, self.structure.content);
       debug('server initialized');
       self.initialized = true;
       self.emit('init');
-		});
-	}
+    });
+  }
 
 
-	start(){
-	  let self = this;
-		if(!this.initialized)
-			return this.once('init', function(){
-			  self.start();
+  start(){
+    let self = this;
+    if(!this.initialized)
+      return this.once('init', function(){
+        self.start();
       });
     this.server.start(function(error) {
-    	if(error)
-    		return debug(error);
+      if(error)
+        return debug(error);
       console.log("Server is now listening ... ( press CTRL+C to stop)\n" +
         "port "+ self.server.endpoints[0].port);
       let endpointUrl = self.server.endpoints[0].endpointDescriptions()[0].endpointUrl;
@@ -81,24 +82,24 @@ class OpcuaServer extends EventEmitter{
       self.emit('running');
     });
     return self;
-	}
+  }
 
-	async waitForServerToRun(){
-	  let self = this;
-	  return new Promise(function(resolve, reject){
-	    if(self.running)
-	      return resolve();
-	    self.once('running', resolve);
+  async waitForServerToRun(){
+    let self = this;
+    return new Promise(function(resolve, reject){
+      if(self.running)
+        return resolve();
+      self.once('running', resolve);
     });
   }
 
-	stop(){
-	  let self = this;
-		this.server.shutdown(function(err){
-			self.running = false;
-			self.emit('stopped');
-		});
-	}
+  stop(){
+    let self = this;
+    this.server.shutdown(function(err){
+      self.running = false;
+      self.emit('stopped');
+    });
+  }
 
   /**
    *
@@ -118,13 +119,13 @@ class OpcuaServer extends EventEmitter{
     let self = this;
     let newElement;
     let addressSpace = self.addressSpace;
-    
+
     if(elem.type === 'Folder')
       newElement = addressSpace.addFolder(par,{browseName: elem.browseName});
-    
+
     else if (elem.type === 'Object')
       newElement = addressSpace.addObject({organizedBy: par, browseName: elem.browseName});
-    
+
     else if (elem.type === 'Variable'){
 
       let dummy = self.variables[elem.nodeId];
@@ -154,7 +155,7 @@ class OpcuaServer extends EventEmitter{
         }
       });
     }
-    
+
     else if (elem.type === 'Method'){
       newElement = addressSpace.addMethod(par,{
         browseName: elem.browseName,
@@ -170,10 +171,11 @@ class OpcuaServer extends EventEmitter{
       let methodFunction = elem.func || defaultFunction;
       newElement.bindMethod(methodFunction);
     }
-    
+
     else {
       console.error('Unknown type '+elem.type);
     }
+    self.ownAddressSpace[elem.nodeId] = newElement;
     return newElement;
   }
 
@@ -206,11 +208,13 @@ module.exports = OpcuaServer;
  * @param elems
  */
 function addContentFromStructure(self, baseNodeId, par, elems){
-	// for loop is faster than forEach
-	for (let key in elems) {
-    if(elems.hasOwnProperty(key))
+  // for loop is faster than forEach
+  for (let key in elems) {
+    if(elems.hasOwnProperty(key)){
       addElementFromStructure(self, baseNodeId, par, key, elems[key]);
-	}
+    }
+
+  }
 }
 
 /**
@@ -222,30 +226,30 @@ function addContentFromStructure(self, baseNodeId, par, elems){
  * @param elem
  */
 function addElementFromStructure(self, baseNodeId, par, browseName, elem){
-	let newElement, dot;
-	if(par !== 'RootFolder'){
-		dot = '.';
-	} else {
-		dot = '';
-	}
+  let newElement, dot;
+  if(par !== 'RootFolder'){
+    dot = '.';
+  } else {
+    dot = '';
+  }
   if((par !== 'RootFolder')&&(typeof par === 'string' || par instanceof String)){
-    par = self.AddressSpace.findNode(par);
+    par = self.ownAddressSpace[par];
   }
 
   if(elem.nodeId)
-		elem.nodeId = baseNodeId + elem.nodeId;
-	else
+    elem.nodeId = baseNodeId + elem.nodeId;
+  else
     elem.nodeId = baseNodeId + dot + browseName;
 
-	elem.browseName = browseName;
+  elem.browseName = browseName;
 
-	newElement = self.addElementToAddressSpace(par, elem);
-	elem.nodePoint = newElement;
+  newElement = self.addElementToAddressSpace(par, elem);
+  elem.nodePoint = newElement;
 
-	if(typeof elem.content !== 'undefined'){
-		if(elem.type === 'RepeatUnit'){
-			throw new Error("The object of type RepeatUnit must not have 'content'. Try the attribute 'unit' instead.");
-		}
-		addContentFromStructure(self, elem.nodeId, newElement, elem.content);
-	}
+  if(typeof elem.content !== 'undefined'){
+    if(elem.type === 'RepeatUnit'){
+      throw new Error("The object of type RepeatUnit must not have 'content'. Try the attribute 'unit' instead.");
+    }
+    addContentFromStructure(self, elem.nodeId, newElement, elem.content);
+  }
 }
