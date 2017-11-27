@@ -145,10 +145,10 @@ You get them as follows:
 let yourVariable = yourServer.getVariable(nodeId);
 ```
 
-Each server variable comes with the following (async) methods:
+Each server variable comes with the following methods:
 
-* `async variable.setValue(value)`
-* `async variable.getValue()`
+* `variable.setValue(value)`
+* `variable.getValue()`
 * `variable.onChange(function(value){})`
 * `variable.oneChange(function(value){})`
 * `variable.monitor()`
@@ -165,7 +165,7 @@ let yourVariable = new OpcuaVariable(yourClient, nodeId, subscribe [,writeInitVa
 
 The `nodeId` is a String. `subscribe` determines whether or not the variable will be monitored permanently or not. `writeInitValue` will be written to the server once the client is connected, but can also stay `null`.
 
-Each client variable comes with the following methods:
+Each client variable comes with the following (async) methods:
 
 * `async variable.write(value)`
 * `async variable.read()`
