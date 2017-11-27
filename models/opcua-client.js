@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Created by Dominik on 25.04.2016.
  * Based on sample_client.js from https://github.com/node-opcua/node-opcua/blob/master/documentation/sample_client.js
  *
@@ -200,6 +200,11 @@ class OpcuaClient extends EventEmitter {
     });
   }
 
+  /**
+   * 
+   * @param patternArray
+   * @returns {*}
+   */
   findPattern(patternArray) {
     if (patternArray.length === 0)
       return [];
@@ -214,11 +219,11 @@ class OpcuaClient extends EventEmitter {
    * @param {String} re2 String of regular Expression in re2 Syntax
    * @returns {Promise<Array<node>>} A promise that contains an array of child nodes in the form
    * <pre><code>{ name: 'Module2001',
- * nodeClass: { key: 'Variable', value: 2 },
- * nodeId: 'ns=4;s=MI5.Module2001',
- * subItems:
- *   [ 'ns=4;s=MI5.Module2001.Input',
- *     'ns=4;s=MI5.Module2001.Output' ] }
+   * nodeClass: { key: 'Variable', value: 2 },
+   * nodeId: 'ns=4;s=MI5.Module2001',
+   * subItems:
+   *   [ 'ns=4;s=MI5.Module2001.Input',
+   *     'ns=4;s=MI5.Module2001.Output' ] }
    * </code></pre>
    */
   findItemAnywhere(re2) {
@@ -250,8 +255,8 @@ class OpcuaClient extends EventEmitter {
     let re2filter = new RegExp(patternArrayReverse.pop());
     let result = [];
 
-    nodesArray.forEach(function(item){
-      self.folderStructure[item.nodeId].subItems.forEach(function(subItem){
+    nodesArray.forEach(function (item) {
+      self.folderStructure[item.nodeId].subItems.forEach(function (subItem) {
         //console.log(re2filter+' '+self.folderStructure[subItem].name);
         if (re2filter.test(self.folderStructure[subItem].name)) {
           result.push(self.folderStructure[subItem]);
@@ -265,22 +270,15 @@ class OpcuaClient extends EventEmitter {
 }
 
 
-
-
-
-
-
-
-
-function _applyDefault(object, defaultObject){
-	if(!object)
-		return defaultObject;
-	for(let key in defaultObject){
-		if(typeof object[key] === 'undefined'){
-			object[key] = defaultObject[key];
-		}
-	}
-	return object;
+function _applyDefault(object, defaultObject) {
+  if (!object)
+    return defaultObject;
+  for (let key in defaultObject) {
+    if (typeof object[key] === 'undefined') {
+      object[key] = defaultObject[key];
+    }
+  }
+  return object;
 }
 
 module.exports = OpcuaClient;

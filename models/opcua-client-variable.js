@@ -12,11 +12,7 @@ class OpcuaClientVariable extends EventEmitter {
     this.initialized = false;
     this.writeInitValue = writeInitValue;
 
-    if(!subscribe)
-      this.subscribedFromBeginning = false;
-    else{
-      this.subscribedFromBeginning = true;
-    }
+    this.subscribedFromBeginning = subscribe;
 
     if(client.connected)
       self.init();
