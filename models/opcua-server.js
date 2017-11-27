@@ -61,6 +61,7 @@ class OpcuaServer extends EventEmitter{
       debug('server initialized');
       self.initialized = true;
       self.emit('init');
+      self.start();
     });
   }
 
@@ -165,7 +166,7 @@ class OpcuaServer extends EventEmitter{
       });
 
       let defaultFunction = function(inputArguments, context, callback){
-        self.emit('method:'+self.nodeId);
+        self.emit('method:'+elem.nodeId, {inputArguments: inputArguments, context: context});
         callback(null,{statusCode: opcua.StatusCodes.Good});
       };
       let methodFunction = elem.func || defaultFunction;

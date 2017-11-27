@@ -4,7 +4,6 @@ const fs = require('fs');
 
 asyncOperation().catch(console.error);
 
-
 async function asyncOperation(){
   let client = new Mi5OpcuaClient("opc.tcp://127.0.0.1:4840");
   let variable = new clientVariable(client, "ns=4;s=Mi5.Output.Connected", true);

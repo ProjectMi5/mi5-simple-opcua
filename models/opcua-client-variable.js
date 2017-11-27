@@ -1,7 +1,7 @@
 const EventEmitter = require('events').EventEmitter;
 const debug = require('debug');
 
-class OpcuaVariable extends EventEmitter {
+class OpcuaClientVariable extends EventEmitter {
   constructor(client, nodeId, subscribe = false, writeInitValue = null){
     super();
     let self = this;
@@ -10,8 +10,7 @@ class OpcuaVariable extends EventEmitter {
     this.nodeId = nodeId;
     this.client = client;
     this.initialized = false;
-    if((this.writeInitValue === null)||(this.writeInitValue === undefined));
-      this.writeInitValue = null;
+    this.writeInitValue = writeInitValue;
 
     if(!subscribe)
       this.subscribedFromBeginning = false;
@@ -132,4 +131,4 @@ class OpcuaVariable extends EventEmitter {
 
 }
 
-module.exports = OpcuaVariable;
+module.exports = OpcuaClientVariable;
