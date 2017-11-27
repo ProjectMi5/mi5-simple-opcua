@@ -5,7 +5,7 @@ own OPC UA server or client. Please also refer to the examples provided on [gith
 
 ## Getting Started
 
-* Install the latest version of [node.js](https://nodejs.org/en/).
+* Install the latest version of [node.js](https://nodejs.org/en/) >= v8.9.1 (includes npm v5.5.1).
 * Create a new folder for your project.
 * Navigate to this folder in the command prompt.
 * Run `npm init` and fill in the requested information or let it empty.
@@ -67,7 +67,7 @@ have a look [here](https://github.com/node-opcua/node-opcua/blob/master/document
 code.
 
 ```javascript 1.8
-yourServer.on('method:{nodeId}', function(data){
+yourServer.on('method:{nodeId}', (data)=>{
   // your code here
   // data looks like this: {inputArguments: inputArguments, context: context}
   // note: this way you cannot specify the output parameters.
@@ -123,21 +123,46 @@ Your own client can be created as follows:
 ```javascript
 const client = require('mi5-simple-opcua').OpcuaClient;
 let endpointUrl = "opc.tcp://[put Server HostName here]:[put port here]"
-let yourClient = new client(endpointUrl, function(error){
-  if(error)
-    return console.log(error);
-  console.log('connection established');
-});
+let yourClient = new client(endpointUrl);
+yourClient.connect()
+    .then(()=>{
+      console.log('connected');
+    })
+    .catch((error)=>{
+      console.error(error);  
+    });
 ```
 
-The `callback(error)` will be executed, once the connection is established or an error occurred.
+**Note:** For a more convenient use with `async` and `await` have a look in the
+[sample project](https://github.com/node-opcua/node-opcua/blob/master/documentation/server_with_method.js).
 
-### OPC UA Variables
+### Browse the Server with your own client
+
+You can let your client browse through the whole server structure.
+
+```javascript 1.8
+//browse
+await client.browseServer();
+```
+
+Again: if you are not familiar with `async` and `await` have a look in the
+[sample project](https://github.com/node-opcua/node-opcua/blob/master/documentation/server_with_method.js).
+
+Once your client has browsed through the server once, you can search for certain nodes by describing a path to them.
+This path is an Array of Regular Expression Strings describing the browseNames of nodes. For example:
+
+```javascript 1.8
+let nodeArray = client.findPattern(['Objects', 'Server', 'Server']);
+// or also try out
+let nodeArray = client.findPattern(['Objects', 'Server', 'Capabilities$']);
+```
+
+## OPC UA Variables
 
 With mi5-simple-opcua variables you can easily listen to or write OPC UA variables on a server.
 **Be aware:** different variables are used for programming a server or a client.
 
-#### Server Variables
+### Server Variables
 
 You get them as follows:
 
@@ -154,23 +179,26 @@ Each server variable comes with the following methods:
 * `variable.monitor()`
 * `variable.unmonitor()`
 
-#### Client Variables
+### Client Variables
 
 They are created as follows:
 
 ```javascript
 const OpcuaVariable = require('mi5-simple-opcua').OpcuaClientVariable;
-let yourVariable = new OpcuaVariable(yourClient, nodeId, subscribe [,writeInitValue]);
+let yourVariable = new OpcuaVariable(yourClient, nodeId [, subscribe [,writeInitValue]]); // square brackets say that the parameter is optional
+// more convenient alternative:
+let yourVariable = yourClient.getVariable(nodeId [, subscribe [,writeInitValue]]); // square brackets say that the parameter is optional
 ```
 
-The `nodeId` is a String. `subscribe` determines whether or not the variable will be monitored permanently or not. `writeInitValue` will be written to the server once the client is connected, but can also stay `null`.
+The `nodeId` is a String. `subscribe` determines whether or not the variable will be monitored permanently or not.
+`writeInitValue` will be written to the server once the client is connected, but can also stay `null`.
 
 Each client variable comes with the following (async) methods:
 
 * `async variable.write(value)`
 * `async variable.read()`
-* `variable.on('change', function(value){})`
-* `variable.once('change', function(value){})`
+* `variable.on('change', (value)=>{})`
+* `variable.once('change', (value)=>{})`
 * `variable.subscribe()`
 * `variable.unsubscribe()`
 

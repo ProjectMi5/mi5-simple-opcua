@@ -10,9 +10,7 @@
 //process.env.debug = "mi5-simple-opcua:*";
 const Promise = require('bluebird');
 const opcua = Promise.promisifyAll(require('node-opcua'), {suffix: 'Promise'});
-const serverVariable = require('./opcua-server-variable');
-const should = require("should");
-//const opcua = require('node-opcua');
+const clientVariable = require('./opcua-client-variable');
 const debug = require('debug')('mi5-simple-opcua:client');
 const assert = require('assert');
 const EventEmitter = require('events');
@@ -24,6 +22,9 @@ const defaultSubscriptionSettings = {
   publishingEnabled: true,
   priority: 10
 };
+const defaultEmptyFolderStructure = {
+  RootFolder: {nodeId: 'RootFolder', name: 'RootFolder'}
+};
 
 class OpcuaClient extends EventEmitter {
   constructor(endpointUrl, subscribe = true, subscriptionSettings) {
@@ -33,9 +34,7 @@ class OpcuaClient extends EventEmitter {
     this.subscriptionSettings = subscriptionSettings;
     this.client = new opcua.OPCUAClient();
     this.numberOfBrowsers = 0;
-    this.folderStructure = {
-      RootFolder: {nodeId: 'RootFolder', name: 'RootFolder'}
-    };
+    this.folderStructure = defaultEmptyFolderStructure;
   }
 
   async connect() {
@@ -107,7 +106,6 @@ class OpcuaClient extends EventEmitter {
   };
 
   async writeNodeValue(nodeId, value, dataType) {
-
     let nodesToWrite = [
       {
         nodeId: nodeId,
@@ -131,7 +129,6 @@ class OpcuaClient extends EventEmitter {
       item.should.eql(opcua.StatusCodes.Good);
     });
     return statusCodes
-
   }
 
   /**
@@ -165,11 +162,25 @@ class OpcuaClient extends EventEmitter {
       });
   }
 
+  /**
+   * Browses the complete server and returns a promise when done.
+   * @returns {Promise.<void>}
+   */
+  async browseServer() {
+    this.folderStructure = defaultEmptyFolderStructure;
+    return this.browseInDepthPromise(["RootFolder"]);
+  }
+
+  /**
+   * Browses the server starting at certain nodes given in an Array.
+   * @param {Array<String>} nodeArray Array of nodeIds
+   * @returns {Promise.<void>}
+   */
   async browseInDepthPromise(nodeArray) {
     let self = this;
     return new Promise(function (resolve, reject) {
       self.browseInDepth(nodeArray, function () {
-        resolve(nodeArray);
+        resolve(self.folderStructure);
       });
     });
   }
@@ -201,9 +212,10 @@ class OpcuaClient extends EventEmitter {
   }
 
   /**
-   * 
-   * @param patternArray
-   * @returns {*}
+   * Finds an array of nodeIds that can be reached by walking along a certain path. This path is described by
+   * an Array of Strings. Note: The strings should be transformable to javascript regExps.
+   * @param {Array<String>} patternArray Array of regExp strings describing the browse name path to the desired nodes.
+   * @returns {Array<String>} Array of nodeIds
    */
   findPattern(patternArray) {
     if (patternArray.length === 0)
@@ -216,7 +228,7 @@ class OpcuaClient extends EventEmitter {
 
   /**
    * Find an item anywhere who's name matches the regExp
-   * @param {String} re2 String of regular Expression in re2 Syntax
+   * @param {String} regexp String of regular Expression
    * @returns {Promise<Array<node>>} A promise that contains an array of child nodes in the form
    * <pre><code>{ name: 'Module2001',
    * nodeClass: { key: 'Variable', value: 2 },
@@ -226,11 +238,11 @@ class OpcuaClient extends EventEmitter {
    *     'ns=4;s=MI5.Module2001.Output' ] }
    * </code></pre>
    */
-  findItemAnywhere(re2) {
+  findItemAnywhere(regexp) {
     let self = this;
     let folderStructure = this.folderStructure;
     let result = [];
-    let reg = new RegExp(re2);
+    let reg = new RegExp(regexp);
     for (let key in folderStructure) {
       if (reg.test(folderStructure[key].name)) {
         //console.log(re2+' '+folderStructure[key].name);
@@ -239,7 +251,6 @@ class OpcuaClient extends EventEmitter {
     }
     return result;
   }
-
 
   /**
    *
@@ -267,6 +278,16 @@ class OpcuaClient extends EventEmitter {
     return self.findItemsRecursive(result, patternArrayReverse);
   }
 
+  /**
+   * Returns a client variable for the given nodeId
+   * @param nodeId
+   * @param [subscribe]
+   * @param [writeInitValue]
+   * @returns {OpcuaClientVariable}
+   */
+  getVariable(nodeId, subscribe, writeInitValue) {
+    return new clientVariable(this, nodeId, subscribe, writeInitValue);
+  }
 }
 
 
