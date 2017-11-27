@@ -12,6 +12,7 @@ const Promise = require('bluebird');
 const opcua = Promise.promisifyAll(require('node-opcua'), {suffix: 'Promise'});
 const clientVariable = require('./opcua-client-variable');
 const debug = require('debug')('mi5-simple-opcua:client');
+const should = require("should"); // this is needed also greyed out!!!
 const assert = require('assert');
 const EventEmitter = require('events');
 const defaultSubscriptionSettings = {
