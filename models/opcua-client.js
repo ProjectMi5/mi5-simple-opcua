@@ -224,7 +224,12 @@ class OpcuaClient extends EventEmitter {
     let copy = JSON.parse(JSON.stringify(patternArray));
     copy.reverse();
     let firstMatches = this.findItemAnywhere(copy.pop());
-    return this.findItemsRecursive(firstMatches, copy);
+    let matches = this.findItemsRecursive(firstMatches, copy);
+    let result = [];
+    matches.forEach((item)=>{
+      result.push(item.nodeId);
+    });
+    return result;
   }
 
   /**
