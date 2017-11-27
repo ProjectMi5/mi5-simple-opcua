@@ -172,6 +172,6 @@ Each client variable comes with the following (async) methods:
 * `variable.on('change', function(value){})`
 * `variable.once('change', function(value){})`
 * `variable.subscribe()`
-* `variable.unsubscribe)`
+* `variable.unsubscribe()`
 
 If the variable is subscribed (either from the beginning in the constructor or later with the method), the value `variable.value` will stay up to date. Otherwise it will contain the last known value.
