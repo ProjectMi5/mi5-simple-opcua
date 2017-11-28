@@ -17,11 +17,18 @@ class OpcuaServerVariable{
     this.subscribe = subscribe || false;
     this.listeners = [];
     this.oneTimeListeners = [];
+    this.dummy = dummy || false;
     if(dummy)
       return;
 		this.value = this.parseByDataType(dataType, value);
 		this.dataType = dataType;
 	}
+
+	undummy(value, dataType){
+	  this.value = this.parseByDataType(dataType, value);
+	  this.dataType = dataType;
+	  this.dummy = false
+  }
 
 	onChange(callback){
 	  this.subscribe = true;

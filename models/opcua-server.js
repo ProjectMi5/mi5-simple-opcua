@@ -131,14 +131,10 @@ class OpcuaServer extends EventEmitter{
 
       let dummy = self.variables[elem.nodeId];
 
-      self.variables[elem.nodeId] = new serverVariable(elem.initValue, elem.dataType);
-
-      if(dummy){
-        let newVar = self.variables[elem.nodeId];
-        newVar.listeners = dummy.listeners;
-        newVar.oneTimeListeners = dummy.oneTimeListeners;
-        newVar.subscribe = dummy.subscribe;
-      }
+      if(dummy)
+        dummy.undummy(elem.initValue, elem.dataType);
+      else
+        self.variables[elem.nodeId] = new serverVariable(elem.initValue, elem.dataType);
 
       newElement = addressSpace.addVariable({
         componentOf: par,
