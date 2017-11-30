@@ -33,4 +33,8 @@ async function asyncOperation(){
   console.log(result);
   setTimeout(function(){console.log(clVar.value)},2000);
   clVar.onChange(console.log);
+
+  setTimeout(()=>{
+    client.end();
+  },10000);
 }

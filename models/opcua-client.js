@@ -294,6 +294,21 @@ class OpcuaClient extends EventEmitter {
   getVariable(nodeId, subscribe, writeInitValue) {
     return new clientVariable(this, nodeId, subscribe, writeInitValue);
   }
+
+  async closeSession(){
+    if(!this.session)
+      return;
+    return this.session.closePromise();
+  }
+
+  async disconnect(){
+    return this.client.disconnectPromise();
+  }
+
+  async end(){
+    await this.closeSession();
+    return this.disconnect();
+  }
 }
 
 
