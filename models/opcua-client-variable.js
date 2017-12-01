@@ -63,14 +63,14 @@ class OpcuaClientVariable extends EventEmitter {
     if(this.monitoredItem)
       return self.debug('is already being monitored.');
     this.monitoredItem = this.client.monitorItem(self.nodeId);
-    setTimeout(function(){
+
+    self.monitoredItem.on("initialized",function(){
       self.emit('subscribed');
       self.monitoredItem.on("changed",function(dataValue){
         let value = dataValue.value.value;
-        //debug(new Date().toString(), nodeId, value);
         self.emit("change", value);
       });
-    },5000);
+    });
   }
 
   unsubscribe(){
