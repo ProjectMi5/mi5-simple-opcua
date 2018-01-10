@@ -28,7 +28,7 @@ The `ServerStructure` can look like this:
 
 ```javascript
 {
-    resourcePath = "", //optional: this path will be added to the endpoint resource name
+  resourcePath: "", //optional: this path will be added to the endpoint resource name
 	rootFolder: "RootFolder", //optional: you only need to add this, if you specify anything else than "RootFolder"
 	baseNodeId: "ns=4;s=", //optional: you only need to add this, if you specify anything else than "ns=4;s="
 	content: FolderStructure  //FolderStructure is addressed in the following section
@@ -134,7 +134,7 @@ yourClient.connect()
 ```
 
 **Note:** For a more convenient use with `async` and `await` have a look in the
-[sample project](https://github.com/node-opcua/node-opcua/blob/master/documentation/server_with_method.js).
+[sample project](https://github.com/ProjectMi5/mi5-simple-opcua-example).
 
 ### Browse the Server with your own client
 
@@ -146,7 +146,7 @@ await client.browseServer();
 ```
 
 Again: if you are not familiar with `async` and `await` have a look in the
-[sample project](https://github.com/node-opcua/node-opcua/blob/master/documentation/server_with_method.js).
+[sample project](https://github.com/ProjectMi5/mi5-simple-opcua-example).
 
 Once your client has browsed through the server once, you can search for certain nodes by describing a path to them.
 This path is an Array of Regular Expression Strings describing the browseNames of nodes. For example:
