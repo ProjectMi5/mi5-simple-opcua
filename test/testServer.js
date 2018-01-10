@@ -32,10 +32,18 @@ const content = {
     }
   }
 };
-let newServer = new Mi5OpcuaServer(4840, {content: content}).start();
-setTimeout(function(){
-  //newServer.server.shutdown(function(){});
-},3000);
+let server;
 
-let variable = newServer.getVariable("ns=4;s=Mi5.Output.Connected");
-variable.onChange(console.log);
+describe('Mi5 OPC UA Server', function () {
+  describe('Server', function () {
+    it('should start the server without error', function () {
+      server = new Mi5OpcuaServer(4841, {content: content});
+
+    });
+
+    it('should do soemthing else', function () {
+      let variable = server.getVariable("ns=4;s=Mi5.Output.Connected");
+      variable.onChange(console.log);
+    });
+  })
+});

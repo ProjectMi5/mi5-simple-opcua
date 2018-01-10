@@ -34,6 +34,7 @@ const content = {
 };
 let newServer = new Mi5OpcuaServer(4840, {content: content});
 
+
 let variable = newServer.getVariable("ns=4;s=Mi5.Output.Connected");
 variable.onChange((value)=>{
   console.log(value);
