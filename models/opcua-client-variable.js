@@ -37,7 +37,7 @@ class OpcuaClientVariable extends EventEmitter {
         self.emit('init');
       })
       .catch(function(err) {
-        console.error('Could not read datatype of nodeId ' + nodeId);
+        console.error('Could not read datatype of nodeId ' + self.nodeId);
         console.error(err);
       });
 
