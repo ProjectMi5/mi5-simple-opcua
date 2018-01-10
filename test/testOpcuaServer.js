@@ -12,4 +12,3 @@ describe('Mi5 OPC UA Server', function() {
   });
 });
 */
-

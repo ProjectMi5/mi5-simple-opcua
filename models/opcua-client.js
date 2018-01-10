@@ -9,10 +9,12 @@
 /*global require,setInterval,console */
 //process.env.debug = "mi5-simple-opcua:*";
 const Promise = require('bluebird');
-const opcua = Promise.promisifyAll(require('node-opcua'), {suffix: 'Promise'});
+const opcua = Promise.promisifyAll(require('node-opcua'), {
+  suffix: 'Promise'
+});
 const clientVariable = require('./opcua-client-variable');
 const debug = require('debug')('mi5-simple-opcua:client');
-const should = require("should"); // this is needed also greyed out!!!
+const should = require('should'); // this is needed also greyed out!!!
 const assert = require('assert');
 const EventEmitter = require('events');
 const defaultSubscriptionSettings = {
@@ -24,7 +26,7 @@ const defaultSubscriptionSettings = {
   priority: 10
 };
 const defaultEmptyFolderStructure = {
-  RootFolder: {nodeId: 'RootFolder', name: 'RootFolder'}
+  RootFolder: { nodeId: 'RootFolder', name: 'RootFolder' }
 };
 
 class OpcuaClient extends EventEmitter {
@@ -42,27 +44,37 @@ class OpcuaClient extends EventEmitter {
     let self = this;
     //connect
     await this.client.connectPromise(self.endpointUrl);
-    debug("connected to opcua server at " + self.endpointUrl);
+    debug('connected to opcua server at ' + self.endpointUrl);
     //create session
     this.connected = true;
     this.session = await self.client.createSessionPromise();
     //subscribe
-    if (this.sub)
-      await this.subscribe();
+    if (this.sub) await this.subscribe();
     self.emit('connect');
   }
 
   async subscribe() {
     let self = this;
-    return new Promise(function (resolve, reject) {
-      self.subscriptionSettings = _applyDefault(self.subscriptionSettings, defaultSubscriptionSettings);
-      self.subscription = new opcua.ClientSubscription(self.session, self.subscriptionSettings);
-      self.subscription.on("started", function () {
-        debug("subscription started - subscriptionId = ", self.subscription.subscriptionId);
-        resolve();
-      }).on("terminated", function () {
-        debug("subscription terminated");
-      });
+    return new Promise(function(resolve, reject) {
+      self.subscriptionSettings = _applyDefault(
+        self.subscriptionSettings,
+        defaultSubscriptionSettings
+      );
+      self.subscription = new opcua.ClientSubscription(
+        self.session,
+        self.subscriptionSettings
+      );
+      self.subscription
+        .on('started', function() {
+          debug(
+            'subscription started - subscriptionId = ',
+            self.subscription.subscriptionId
+          );
+          resolve();
+        })
+        .on('terminated', function() {
+          debug('subscription terminated');
+        });
     });
   }
 
@@ -81,8 +93,12 @@ class OpcuaClient extends EventEmitter {
 
   monitorItem(nodeId, samplingInterval) {
     let self = this;
-    assert(self.subscription, 'You can only monitor items after subscribing to the server.');
-    return this.subscription.monitor({
+    assert(
+      self.subscription,
+      'You can only monitor items after subscribing to the server.'
+    );
+    return this.subscription.monitor(
+      {
         nodeId: opcua.resolveNodeId(nodeId),
         attributeId: opcua.AttributeIds.Value
       },
@@ -97,14 +113,14 @@ class OpcuaClient extends EventEmitter {
 
   onChange(nodeId, callback) {
     let monitoredItem = this.monitorItem(nodeId);
-    setTimeout(function () {
-      monitoredItem.on("changed", function (dataValue) {
+    setTimeout(function() {
+      monitoredItem.on('changed', function(dataValue) {
         let value = dataValue.value.value;
         //debug(new Date().toString(), nodeId, value);
         callback(value);
       });
     }, 10000);
-  };
+  }
 
   async writeNodeValue(nodeId, value, dataType) {
     let nodesToWrite = [
@@ -126,10 +142,10 @@ class OpcuaClient extends EventEmitter {
 
     let statusCodes = await this.session.writePromise(nodesToWrite);
     statusCodes.length.should.equal(nodesToWrite.length);
-    statusCodes.forEach(function (item) {
+    statusCodes.forEach(function(item) {
       item.should.eql(opcua.StatusCodes.Good);
     });
-    return statusCodes
+    return statusCodes;
   }
 
   /**
@@ -139,28 +155,23 @@ class OpcuaClient extends EventEmitter {
    */
   browseNode(nodeId) {
     let self = this;
-    return self.session.browsePromise(nodeId)
-      .then(function (browse_result) {
-        let childNodeIds = [];
-        browse_result[0].references.forEach(function (reference) {
-          if (reference.isForward === false)
-            return;
-          if (/Type/.test(reference.nodeClass.toString()))
-            return;
-          if (/DefaultConfiguration/.test(reference.browseName.name))
-            return;
-          let childNodeId = reference.nodeId.toString();
-          childNodeIds.push(childNodeId);
-          if (typeof self.folderStructure[childNodeId] !== 'undefined')
-            return;
-          self.folderStructure[childNodeId] = {
-            name: reference.browseName.name,
-            nodeId: childNodeId,
-            nodeClass: reference.nodeClass
-          };
-        });
-        self.folderStructure[nodeId].subItems = childNodeIds;
+    return self.session.browsePromise(nodeId).then(function(browse_result) {
+      let childNodeIds = [];
+      browse_result[0].references.forEach(function(reference) {
+        if (reference.isForward === false) return;
+        if (/Type/.test(reference.nodeClass.toString())) return;
+        if (/DefaultConfiguration/.test(reference.browseName.name)) return;
+        let childNodeId = reference.nodeId.toString();
+        childNodeIds.push(childNodeId);
+        if (typeof self.folderStructure[childNodeId] !== 'undefined') return;
+        self.folderStructure[childNodeId] = {
+          name: reference.browseName.name,
+          nodeId: childNodeId,
+          nodeClass: reference.nodeClass
+        };
       });
+      self.folderStructure[nodeId].subItems = childNodeIds;
+    });
   }
 
   /**
@@ -169,7 +180,7 @@ class OpcuaClient extends EventEmitter {
    */
   async browseServer() {
     this.folderStructure = defaultEmptyFolderStructure;
-    return this.browseInDepthPromise(["RootFolder"]);
+    return this.browseInDepthPromise(['RootFolder']);
   }
 
   /**
@@ -179,8 +190,8 @@ class OpcuaClient extends EventEmitter {
    */
   async browseInDepthPromise(nodeArray) {
     let self = this;
-    return new Promise(function (resolve, reject) {
-      self.browseInDepth(nodeArray, function () {
+    return new Promise(function(resolve, reject) {
+      self.browseInDepth(nodeArray, function() {
         resolve(self.folderStructure);
       });
     });
@@ -194,21 +205,20 @@ class OpcuaClient extends EventEmitter {
   browseInDepth(nodeIdArray, callback) {
     let self = this;
     //console.log('browseInDepth: nodeIdArray:' + nodeIdArray.toString() + ' numberOfBrowsers: ' + self.numberOfBrowsers);
-    if ((nodeIdArray.length === 0) && (self.numberOfBrowsers === 0)) {
+    if (nodeIdArray.length === 0 && self.numberOfBrowsers === 0) {
       return callback();
     }
     self.numberOfBrowsers += nodeIdArray.length;
-    nodeIdArray.forEach(function (item, index, array) {
+    nodeIdArray.forEach(function(item, index, array) {
       //console.log(self.folderStructure[item]);
       if (typeof self.folderStructure[item].subItems !== 'undefined') {
         self.numberOfBrowsers--;
         return self.browseInDepth([], callback);
       }
-      self.browseNode(item)
-        .then(function () {
-          self.numberOfBrowsers--;
-          self.browseInDepth(self.folderStructure[item].subItems, callback);
-        });
+      self.browseNode(item).then(function() {
+        self.numberOfBrowsers--;
+        self.browseInDepth(self.folderStructure[item].subItems, callback);
+      });
     });
   }
 
@@ -219,14 +229,13 @@ class OpcuaClient extends EventEmitter {
    * @returns {Array<String>} Array of nodeIds
    */
   findPattern(patternArray) {
-    if (patternArray.length === 0)
-      return [];
+    if (patternArray.length === 0) return [];
     let copy = JSON.parse(JSON.stringify(patternArray));
     copy.reverse();
     let firstMatches = this.findItemAnywhere(copy.pop());
     let matches = this.findItemsRecursive(firstMatches, copy);
     let result = [];
-    matches.forEach((item)=>{
+    matches.forEach(item => {
       result.push(item.nodeId);
     });
     return result;
@@ -266,14 +275,13 @@ class OpcuaClient extends EventEmitter {
    */
   findItemsRecursive(nodesArray, patternArrayReverse) {
     //console.log('pattern array reverse: '+patternArrayReverse);
-    if (patternArrayReverse.length === 0)
-      return nodesArray;
+    if (patternArrayReverse.length === 0) return nodesArray;
     let self = this;
     let re2filter = new RegExp(patternArrayReverse.pop());
     let result = [];
 
-    nodesArray.forEach(function (item) {
-      self.folderStructure[item.nodeId].subItems.forEach(function (subItem) {
+    nodesArray.forEach(function(item) {
+      self.folderStructure[item.nodeId].subItems.forEach(function(subItem) {
         //console.log(re2filter+' '+self.folderStructure[subItem].name);
         if (re2filter.test(self.folderStructure[subItem].name)) {
           result.push(self.folderStructure[subItem]);
@@ -295,26 +303,23 @@ class OpcuaClient extends EventEmitter {
     return new clientVariable(this, nodeId, subscribe, writeInitValue);
   }
 
-  async closeSession(){
-    if(!this.session)
-      return;
+  async closeSession() {
+    if (!this.session) return;
     return this.session.closePromise();
   }
 
-  async disconnect(){
+  async disconnect() {
     return this.client.disconnectPromise();
   }
 
-  async end(){
+  async end() {
     await this.closeSession();
     return this.disconnect();
   }
 }
 
-
 function _applyDefault(object, defaultObject) {
-  if (!object)
-    return defaultObject;
+  if (!object) return defaultObject;
   for (let key in defaultObject) {
     if (typeof object[key] === 'undefined') {
       object[key] = defaultObject[key];
