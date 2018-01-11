@@ -254,7 +254,6 @@ class OpcuaClient extends EventEmitter {
    * </code></pre>
    */
   findItemAnywhere(regexp) {
-    let self = this;
     let folderStructure = this.folderStructure;
     let result = [];
     let reg = new RegExp(regexp);
