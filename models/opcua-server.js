@@ -127,12 +127,17 @@ class OpcuaServer extends EventEmitter {
     let newElement;
     let addressSpace = self.addressSpace;
 
+    // prevent element from being added twice
+    if(typeof self.ownAddressSpace[elem.nodeId] !== 'undefined')
+      return self.ownAddressSpace[elem.nodeId];
+
     if (elem.type === 'Folder')
-      newElement = addressSpace.addFolder(par, { browseName: elem.browseName });
+      newElement = addressSpace.addFolder(par, { browseName: elem.browseName, nodeId: elem.nodeId });
     else if (elem.type === 'Object')
       newElement = addressSpace.addObject({
         organizedBy: par,
-        browseName: elem.browseName
+        browseName: elem.browseName,
+        nodeId: elem.nodeId
       });
     else if (elem.type === 'Variable') {
       let dummy = self.variables[elem.nodeId];

@@ -38,6 +38,9 @@ describe('Mi5 OPC UA Server', function() {
   describe('Server', function() {
     it('should start the server without error', function() {
       server = new Mi5OpcuaServer(4841, { content: content });
+      server.once('init', () => {
+        server.addElementToAddressSpace('RootFolder', {browseName: 'Mi5', type: 'Folder', nodeId: 'ns=4;s=Mi5'});
+      })
     });
 
     it('should do soemthing else', function() {
