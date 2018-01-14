@@ -87,7 +87,7 @@ class OpcuaServer extends EventEmitter {
         .endpointUrl;
       console.log('the primary server endpoint url is ', endpointUrl);
       self.running = true;
-      self.emit('running');
+      self.emit('running', endpointUrl);
     });
     return self;
   }
